@@ -1,0 +1,21 @@
+# Ignore everything
+/*
+
+# Keep gitignore + README
+!.gitignore
+!README.md
+
+# Allow these folders
+!/mnp-ai-bot/
+!/mnp-frontend/
+
+# Allow everything inside them
+!/mnp-ai-bot/**
+!/mnp-frontend/**
+
+# Ignore junk inside allowed folders
+**/node_modules/
+**/venv/
+**/.env
+**/__pycache__/
+**/.DS_Store

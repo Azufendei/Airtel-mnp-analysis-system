@@ -1,0 +1,12 @@
+{
+  "msisdn": "919890123456",
+  "log_time": "2026-05-26T10:30:00",
+  "log_level": "INFO",
+  "source": "API",
+  "message": "Port-in request received successfully",
+  "extracted": {
+    "request_type": "port_in",
+    "processing_time_ms": 120,
+    "endpoint": "/api/mnp/port-in"
+  }
+}

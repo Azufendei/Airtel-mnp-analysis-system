@@ -1,0 +1,14 @@
+{
+  "msisdn": "919890123456",
+  "event_type": "Port_in",
+  "timestamp": "2026-05-26T10:30:00",
+  "operator": "Jio",
+  "circle": "Mumbai",
+  "result": "Success",
+  "txn_id": "TXN123456",
+  "details": {
+    "donor": "Airtel",
+    "recipient": "Jio",
+    "reason": "Better plans"
+  }
+}
