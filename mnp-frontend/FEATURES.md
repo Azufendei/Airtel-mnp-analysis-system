@@ -244,7 +244,7 @@ All components are fully responsive and tested on different screen sizes.
 
 ## 🔐 Security Features
 
-✅ OLM ID-based authentication
+✅ OLM ID-based authentication 
 ✅ Session management with localStorage
 ✅ Protected routes (redirect to login if not authenticated)
 ✅ Automatic logout on 401 response
@@ -378,7 +378,6 @@ Your frontend is production-ready. Simply:
 1. Build: `npm run build`
 2. Deploy `dist/` folder to your hosting service
 3. Configure `VITE_API_URL` via environment
-4. Done! 🎉
 
 ---
 
