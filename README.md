@@ -513,6 +513,7 @@ See individual README files for detailed deployment guides.
 2. Review troubleshooting section
 3. Check browser/server console logs
 4. Verify configuration files
+5. Feel free to reach out to the repo owner "Azufendei" :).
 
 ### Debugging
 - **Backend**: Check console output, database logs
@@ -561,12 +562,8 @@ Proprietary - MNP AI Bot
 
 ---
 
-## 🎉 Ready to Go!
-
-Both applications are now configured and ready to use.
-
 **Start here**:
 1. Backend: [MNP AI Bot README](./mnp-ai-bot/README.md)
 2. Frontend: [MNP Frontend README](./mnp-frontend/README.md)
 
-Happy analyzing! 🚀📱✨
+
