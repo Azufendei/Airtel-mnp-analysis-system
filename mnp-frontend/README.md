@@ -347,7 +347,6 @@ EXPOSE 3000
 CMD ["serve", "-s", "dist", "-l", "3000"]
 ```
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
 
 ## 🔐 Security
 
@@ -460,7 +459,6 @@ Both projects work together:
 | QUICK_START.md | 5-minute setup | See file |
 | SETUP.md | Detailed setup | See file |
 | FEATURES.md | Feature details | See file |
-| DEPLOYMENT.md | Deploy guide | See file |
 | FILE_LIST.md | Files overview | See file |
 
 ## 🎓 Learning Resources
@@ -501,7 +499,6 @@ Both projects work together:
 
 - Refer to SETUP.md for setup issues
 - Check FEATURES.md for feature details
-- See DEPLOYMENT.md for deployment
 - Review inline code comments
 
 ## 📜 License
