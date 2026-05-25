@@ -221,8 +221,8 @@ curl -X POST http://localhost:8000/test/insert_sample_data
 ### Test MSISDNs
 
 ```
-919890123456
-919876543210
+9890123456
+9876543210
 ```
 
 ### Test OLM IDs
