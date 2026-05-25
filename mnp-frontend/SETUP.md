@@ -200,7 +200,7 @@ Modify font family in `body` selector in `src/index.css`
 
 ---
 
-## 🚀 Performance Tips
+## Performance Tips
 
 1. **Optimize Bundle**: `npm run build` creates optimized dist/
 2. **Lazy Loading**: Results load on-demand
@@ -235,16 +235,3 @@ For issues:
 2. Verify backend is running
 3. Check `.env` configuration
 4. Review README.md for detailed info
-
----
-
-## 🎯 Next Steps
-
-1. ✅ Install dependencies
-2. ✅ Start backend
-3. ✅ Start frontend dev server
-4. ✅ Test with sample data
-5. ✅ Customize branding (optional)
-6. ✅ Deploy to production
-
-Happy analyzing! 🚀
