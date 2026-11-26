@@ -64,6 +64,7 @@ htmlcov/
 # Logs
 logs/
 *.log
+db_stats_*.json
 
 # OS
 .DS_Store

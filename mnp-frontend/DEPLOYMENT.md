@@ -1,454 +1,87 @@
-# MNP Frontend - Deployment Guide
+# MNP Frontend - Production Deployment Guide
 
-## 🚀 Production Deployment
-
-This guide covers deploying the MNP Frontend to various hosting platforms.
+Guide for building and hosting the MNP Frontend in production environments.
 
 ---
 
-## 📋 Pre-Deployment Checklist
+## 🏗️ Building for Production
 
-- [ ] Update `.env` with production API URL
-- [ ] Run `npm run build` successfully
-- [ ] Test `npm run preview` locally
-- [ ] All tests pass
-- [ ] No console errors or warnings
-- [ ] API backend is deployed and accessible
+Ensure dependencies are installed and execute the production build:
 
----
-
-## 🏗️ Build for Production
-
-### Generate Optimized Bundle
 ```bash
+cd mnp-frontend
+npm ci
 npm run build
 ```
 
-This creates an optimized `dist/` folder (~250KB gzipped).
+This compiles TypeScript and produces optimized static assets in `dist/`:
+- Bundled and minified HTML, CSS, and JS (~75KB gzipped)
+- Static assets and SVG icons
+- Cache-busted asset hashing
 
-### Verify Build
+Test the production bundle locally:
 ```bash
 npm run preview
-# Opens local preview of production build
 ```
 
 ---
 
-## ☁️ Deployment Platforms
+## ☁️ Deployment Targets
 
-### 1️⃣ Vercel (Recommended - Free)
+### 1. Nginx / Docker Container (Self-Hosted)
 
-**Easiest deployment option!**
-
-#### Via CLI:
-```bash
-npm install -g vercel
-vercel
-# Follow prompts
-# Vercel detects Vite and builds automatically
-```
-
-#### Via GitHub:
-1. Push code to GitHub
-2. Go to [vercel.com](https://vercel.com)
-3. Click "New Project"
-4. Import your GitHub repository
-5. Configure environment: `VITE_API_URL`
-6. Deploy!
-
-#### Environment Setup:
-```
-VITE_API_URL=https://api.your-domain.com
-```
-
----
-
-### 2️⃣ Netlify (Free)
-
-#### Via CLI:
-```bash
-npm install -g netlify-cli
-netlify deploy --prod --dir=dist
-```
-
-#### Via GitHub:
-1. Go to [netlify.com](https://netlify.com)
-2. Click "New site from Git"
-3. Choose GitHub repository
-4. Build settings:
-   - Build command: `npm run build`
-   - Publish directory: `dist`
-5. Add environment variable: `VITE_API_URL`
-6. Deploy!
-
----
-
-### 3️⃣ AWS S3 + CloudFront
-
-#### Prerequisites:
-- AWS account
-- AWS CLI installed
-- S3 bucket created
-
-#### Deploy:
-```bash
-# Build
-npm run build
-
-# Sync to S3
-aws s3 sync dist/ s3://your-bucket-name --delete
-
-# Create CloudFront distribution for CDN (optional)
-# See AWS documentation for details
-```
-
-#### Configure CloudFront:
-- Set origin to S3 bucket
-- Enable caching
-- Set TTL: 3600 seconds
-- Add header for SPA routing
-
----
-
-### 4️⃣ GitHub Pages (Free for Public Repos)
-
-#### Setup:
-```bash
-# Update vite.config.ts:
-# export default defineConfig({
-#   base: '/mnp-frontend/'  // if repo is named mnp-frontend
-# })
-
-npm run build
-git add dist
-git commit -m "Build for deployment"
-git push
-```
-
-#### Configure GitHub:
-1. Go to repo Settings → Pages
-2. Source: Deploy from a branch
-3. Branch: main, folder: /root or /docs
-4. Add `dist/` to github pages
-
----
-
-### 5️⃣ Docker + Container
-
-#### Create Dockerfile:
+Example `Dockerfile`:
 ```dockerfile
 # Build stage
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 COPY . .
 RUN npm run build
 
-# Production stage
-FROM node:18-alpine
-WORKDIR /app
-RUN npm install -g serve
-COPY --from=builder /app/dist ./dist
-EXPOSE 3000
-CMD ["serve", "-s", "dist", "-l", "3000"]
+# Production serve stage
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
 ```
 
-#### Build & Run:
-```bash
-docker build -t mnp-frontend .
-docker run -p 3000:8080 \
-  -e VITE_API_URL=http://api.example.com \
-  mnp-frontend
-```
-
----
-
-### 6️⃣ Traditional Web Server (Apache/Nginx)
-
-#### Nginx Configuration:
+`nginx.conf` (SPA fallback):
 ```nginx
 server {
     listen 80;
-    server_name your-domain.com;
-    
-    root /var/www/mnp-frontend/dist;
-    index index.html;
-    
-    # SPA routing: serve index.html for all non-file requests
+    server_name localhost;
+
     location / {
+        root /usr/share/nginx/html;
+        index index.html;
         try_files $uri $uri/ /index.html;
     }
-    
-    # Cache static assets
-    location ~* \.(js|css|png|jpg|svg)$ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-    }
-    
-    # API proxy (optional)
-    location /api/ {
-        proxy_pass http://backend-api:8000/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
 }
 ```
 
-#### Apache Configuration:
-```apache
-<VirtualHost *:80>
-    ServerName your-domain.com
-    DocumentRoot /var/www/mnp-frontend/dist
-    
-    # Enable mod_rewrite
-    <Directory /var/www/mnp-frontend/dist>
-        RewriteEngine On
-        RewriteBase /
-        RewriteRule ^index\.html$ - [L]
-        RewriteCond %{REQUEST_FILENAME} !-f
-        RewriteCond %{REQUEST_FILENAME} !-d
-        RewriteRule . /index.html [L]
-    </Directory>
-</VirtualHost>
-```
+### 2. Vercel
 
----
-
-## 🌐 Environment Configuration
-
-### Development
-```
-VITE_API_URL=http://localhost:8000
-```
-
-### Staging
-```
-VITE_API_URL=https://staging-api.example.com
-```
-
-### Production
-```
-VITE_API_URL=https://api.example.com
-```
-
-### Set Environment:
 ```bash
-# Create production .env
-echo "VITE_API_URL=https://api.example.com" > .env.production
-
-# Build with production env
-npm run build
+npm install -g vercel
+vercel
 ```
+Set environment variable in Vercel project settings:
+- `VITE_API_URL`: `https://your-backend-api-domain.com`
 
----
+### 3. Netlify
 
-## 🔒 Security Best Practices
+Create `netlify.toml`:
+```toml
+[build]
+  publish = "dist"
+  command = "npm run build"
 
-### 1. HTTPS Only
-- Always use HTTPS in production
-- Get SSL certificate (free via Let's Encrypt)
-- Redirect HTTP to HTTPS
-
-### 2. CORS Configuration
-- Restrict API origins
-- Don't use `allow_origins=["*"]` in production
-- Configure backend to accept only your domain
-
-### 3. Environment Variables
-- Never commit `.env` to git
-- Use platform-specific secrets management
-- Rotate API keys regularly
-
-### 4. Headers
-```nginx
-# Security headers
-add_header X-Frame-Options "SAMEORIGIN" always;
-add_header X-Content-Type-Options "nosniff" always;
-add_header X-XSS-Protection "1; mode=block" always;
-add_header Referrer-Policy "no-referrer-when-downgrade" always;
-add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline';" always;
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 ```
-
-### 5. API Security
-- Implement rate limiting on backend
-- Add request authentication
-- Validate all inputs
-- Use API keys for sensitive endpoints
-
----
-
-## 📊 Performance Optimization
-
-### Enable Compression
-```nginx
-# Nginx
-gzip on;
-gzip_types text/plain text/css text/javascript application/json;
-gzip_min_length 1000;
-```
-
-### Cache Strategy
-```nginx
-# Cache static assets long-term
-location ~* \.(js|css|png|jpg|svg|woff)$ {
-    expires 365d;
-    add_header Cache-Control "public, immutable";
-}
-
-# Don't cache HTML (index.html)
-location = /index.html {
-    add_header Cache-Control "public, max-age=0, must-revalidate";
-}
-```
-
-### CDN Setup
-- Use CloudFlare or similar CDN
-- Cache static assets
-- DDoS protection
-- Automatic HTTPS
-
----
-
-## ✅ Post-Deployment Testing
-
-### 1. Functional Testing
-```bash
-# Test all user flows
-- [ ] Login works
-- [ ] Search works
-- [ ] Results display correctly
-- [ ] Export/Print works
-- [ ] Logout works
-```
-
-### 2. Performance Testing
-```bash
-# Use Chrome DevTools
-- Lighthouse audit (target: 85+)
-- Performance tab
-- Network analysis
-- Bundle size check
-```
-
-### 3. Security Testing
-```bash
-# Security headers check
-curl -I https://your-domain.com
-# Should see security headers
-
-# SSL test
-# Go to https://www.ssllabs.com/ssltest/
-```
-
-### 4. Monitoring
-- Set up error tracking (Sentry, LogRocket)
-- Monitor API response times
-- Track user analytics
-- Set up uptime monitoring
-
----
-
-## 🔄 Continuous Deployment
-
-### GitHub Actions Example
-```yaml
-name: Deploy
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '18'
-      
-      - run: npm install
-      - run: npm run build
-      
-      - name: Deploy to Vercel
-        run: npm install -g vercel && vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
-```
-
----
-
-## 🚨 Troubleshooting
-
-### Blank Page After Deploy
-- Check browser console for errors
-- Verify API URL is correct
-- Check CORS settings on backend
-- Clear browser cache (Ctrl+Shift+Del)
-
-### 404 Errors on Refresh
-- Configure SPA routing (serve index.html for all routes)
-- Check web server configuration
-- Verify file permissions
-
-### API Connection Failed
-- Verify API URL in environment variables
-- Check backend is running and accessible
-- Verify CORS headers on backend
-- Check firewall rules
-
-### Slow Performance
-- Enable gzip compression
-- Enable caching headers
-- Use CDN
-- Check database query performance
-- Monitor API response times
-
----
-
-## 📞 Support & Resources
-
-- [Vite Deployment Guide](https://vitejs.dev/guide/static-deploy.html)
-- [Vercel Deployment](https://vercel.com/docs)
-- [Netlify Deployment](https://docs.netlify.com/)
-- [AWS S3 + CloudFront](https://docs.aws.amazon.com/AmazonS3/latest/dev/HostingWebsiteOnS3Setup.html)
-
----
-
-## 📋 Deployment Checklist
-
-```
-Pre-Deployment:
-- [ ] All tests pass
-- [ ] No console errors
-- [ ] API URL configured for production
-- [ ] Backend deployed and accessible
-- [ ] SSL certificate ready
-
-Deployment:
-- [ ] Build succeeds locally
-- [ ] Preview works locally
-- [ ] Deployment platform configured
-- [ ] Environment variables set
-- [ ] Deploy successful
-
-Post-Deployment:
-- [ ] App loads and runs
-- [ ] All features work
-- [ ] No console errors
-- [ ] Performance acceptable
-- [ ] Security headers present
-- [ ] Monitoring enabled
-
-Maintenance:
-- [ ] Regular backups
-- [ ] Security updates
-- [ ] Performance monitoring
-- [ ] Error tracking
-- [ ] User feedback collection
-```
-
----
-
-**Happy Deploying!** 🚀
-
-Your MNP Frontend is ready for production!
+Set `VITE_API_URL` in Netlify dashboard settings.
