@@ -3,10 +3,18 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.config import Config
 
-engine = create_engine(Config.DATABASE_URL)
+# Enterprise connection pool with stale connection recycling and pre-ping
+engine = create_engine(
+    Config.DATABASE_URL,
+    pool_size=10,
+    max_overflow=20,
+    pool_pre_ping=True,
+    pool_recycle=3600,
+)
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create Base here - this is the single source of truth
+# Single source of truth for ORM base
 Base = declarative_base()
 
 def get_db():

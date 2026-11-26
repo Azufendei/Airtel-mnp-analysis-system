@@ -4,14 +4,18 @@ from dotenv import load_dotenv
 
 # Find .env relative to this file
 env_path = Path(__file__).resolve().parent.parent / ".env"
-load_dotenv(dotenv_path=env_path)
-# Fallback to local cwd if not found
+if env_path.exists():
+    load_dotenv(dotenv_path=env_path)
 load_dotenv()
 
 class Config:
-    DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:Code.C.C..L.L.Geass@localhost:5432/mnp_bot_db")
-    SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-this")
+    ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+    DATABASE_URL = os.getenv(
+        "DATABASE_URL",
+        "postgresql://postgres:postgres@localhost:5432/mnp_bot_db"
+    )
+    SECRET_KEY = os.getenv("SECRET_KEY", "prod-insecure-change-in-production-key-32chars")
     ALGORITHM = os.getenv("ALGORITHM", "HS256")
-    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+    ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
     GROQ_API_KEY = os.getenv("GROQ_API_KEY", "").strip('"').strip("'")
-    GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+    GROQ_MODEL = os.getenv("GROQ_MODEL", "qwen/qwen3.8-27b")

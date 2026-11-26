@@ -3,6 +3,7 @@ from typing import List, Dict, Any, Optional, Tuple
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from app.models import MNPJourney, ApplicationLog
+from app.schemas import AIAnalysisOutput
 from tabulate import tabulate
 from groq import Groq
 from app.config import Config
@@ -210,29 +211,32 @@ Respond ONLY in JSON format:
         response = self.groq_client.chat.completions.create(
             model=Config.GROQ_MODEL,
             messages=[
-                {"role": "system", "content": "You are an expert MNP analyst. Respond only with valid JSON."},
+                {"role": "system", "content": "You are an expert MNP analyst. Respond only with valid JSON matching the requested schema."},
                 {"role": "user", "content": prompt}
             ],
+            response_format={"type": "json_object"},
             temperature=0.3,
             max_tokens=1000,
         )
 
         raw = response.choices[0].message.content.strip()
-        
-        # Strip markdown fences if present
-        if raw.startswith("```json"):
-            raw = raw[7:]
-        elif raw.startswith("```"):
-            raw = raw[3:]
-        if raw.endswith("```"):
-            raw = raw[:-3]
+        try:
+            parsed_json = json.loads(raw)
+        except Exception:
+            if raw.startswith("```json"):
+                raw = raw[7:]
+            elif raw.startswith("```"):
+                raw = raw[3:]
+            if raw.endswith("```"):
+                raw = raw[:-3]
+            parsed_json = json.loads(raw.strip())
 
-        result = json.loads(raw.strip())
+        output_model = AIAnalysisOutput.model_validate(parsed_json)
 
         suggestions = []
         
         # Add recommendations as high priority suggestions
-        for rec in result.get("recommendations", [])[:3]:
+        for rec in output_model.recommendations[:3]:
             suggestions.append({
                 "category": "Recommendations",
                 "priority": "high",
@@ -241,7 +245,7 @@ Respond ONLY in JSON format:
             })
         
         # Add warnings as critical priority suggestions
-        for warn in result.get("warnings", [])[:2]:
+        for warn in output_model.warnings[:2]:
             suggestions.append({
                 "category": "Warnings",
                 "priority": "critical",
@@ -250,7 +254,7 @@ Respond ONLY in JSON format:
             })
         
         # Add next actions as medium priority suggestions
-        for action in result.get("next_actions", [])[:2]:
+        for action in output_model.next_actions[:2]:
             suggestions.append({
                 "category": "Next Actions",
                 "priority": "medium",

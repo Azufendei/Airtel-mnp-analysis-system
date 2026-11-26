@@ -5,6 +5,10 @@
 !.gitignore
 !README.md
 
+# Allow GitHub Actions workflows
+!/.github/
+!/.github/**
+
 # Allow these folders
 !/mnp-ai-bot/
 !/mnp-frontend/
@@ -19,3 +23,4 @@
 **/.env
 **/__pycache__/
 **/.DS_Store
+**/.pytest_cache/

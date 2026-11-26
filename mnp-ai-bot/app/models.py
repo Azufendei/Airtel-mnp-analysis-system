@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, JSON, Text, Index
 from sqlalchemy.sql import func
-from app.database import Base  # Import Base from database, not the other way around
+from app.database import Base
 
 class UserOLM(Base):
     __tablename__ = "user_olm"
@@ -8,6 +8,7 @@ class UserOLM(Base):
     id = Column(Integer, primary_key=True, index=True)
     olm_id = Column(String, unique=True, index=True, nullable=False)
     role = Column(String, default="viewer")
+    hashed_password = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     last_login = Column(DateTime(timezone=True), nullable=True)

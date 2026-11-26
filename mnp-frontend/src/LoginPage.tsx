@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
-import { useAuth } from './AuthContext.tsx'
+import { useAuth } from './AuthContext'
 import './LoginPage.css'
 
 export default function LoginPage() {
   const [olmId, setOlmId] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { isAuthenticated, login } = useAuth()
@@ -14,17 +15,16 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      if (!olmId.trim()) {
-        setError('Please enter a valid OLM ID')
+      if (!olmId.trim() || !password.trim()) {
+        setError('Please enter both your OLM ID and Password')
         setLoading(false)
         return
       }
 
-      // Validate against backend users (optional check)
-      // For now, just authenticate the user
-      login(olmId)
-    } catch (err) {
-      setError('Failed to authenticate. Please try again.')
+      await login(olmId.trim(), password)
+    } catch (err: any) {
+      const msg = err.response?.data?.detail || 'Authentication failed. Please verify your OLM credentials.'
+      setError(msg)
       console.error(err)
     } finally {
       setLoading(false)
@@ -40,18 +40,31 @@ export default function LoginPage() {
       <div className="login-card">
         <div className="login-header">
           <h1>MNP Journey Analyzer</h1>
-          <p>Mobile Number Portability Analysis & Intelligence</p>
+          <p>Enterprise Telecom Portability Analytics</p>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="olmId">OLM ID</label>
+            <label htmlFor="olmId">OLM Operator ID</label>
             <input
               id="olmId"
               type="text"
-              placeholder="Enter your OLM ID"
+              placeholder="e.g. OLM_ADMIN_001"
               value={olmId}
               onChange={(e) => setOlmId(e.target.value)}
+              disabled={loading}
+              className="form-input"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Enter password (Default: Password@123)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
               className="form-input"
             />
@@ -61,15 +74,15 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={loading || !olmId.trim()}
+            disabled={loading || !olmId.trim() || !password.trim()}
             className="submit-button"
           >
-            {loading ? 'Authenticating...' : 'Login'}
+            {loading ? 'Authenticating...' : 'Sign In'}
           </button>
         </form>
 
         <div className="login-footer">
-          <p>Enter your OLM ID to access MNP journey analysis</p>
+          <p>Protected by OAuth2 / JWT. Default credentials: <code>Password@123</code></p>
         </div>
       </div>
     </div>

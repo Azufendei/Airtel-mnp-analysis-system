@@ -48,14 +48,22 @@ export interface MNPAnalysisResponse {
 
 export interface MNPRequest {
   msisdn: string;
-  olm_id: string;
+  olm_id?: string;
   start_time?: string;
   end_time?: string;
 }
 
+export interface UserProfile {
+  olm_id: string;
+  role: string;
+  is_active: boolean;
+  last_login?: string;
+}
+
 export interface AuthContextType {
   olmId: string | null;
+  user: UserProfile | null;
   isAuthenticated: boolean;
-  login: (olmId: string) => void;
+  login: (olmId: string, password: string) => Promise<void>;
   logout: () => void;
 }
