@@ -1,5 +1,7 @@
 # MNP AI Bot - Complete Application Suite
 
+[![Continuous Integration (CI)](https://github.com/Azufendei/Airtel-mnp-analysis-system/actions/workflows/ci.yml/badge.svg)](https://github.com/Azufendei/Airtel-mnp-analysis-system/actions/workflows/ci.yml)
+
 A comprehensive Mobile Number Portability (MNP) analysis platform combining a powerful FastAPI backend with a modern React frontend.
 
 ## 📦 Project Overview
