@@ -1,12 +1,12 @@
-import React from 'react'
-import { useAuth } from '../AuthContext'
+import type { ReactNode, FC } from 'react'
+import { useAuth } from './AuthContext'
 import LoginPage from './LoginPage'
 
 interface ProtectedRouteProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+export const ProtectedRoute: FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated } = useAuth()
 
   if (!isAuthenticated) {

@@ -1,6 +1,6 @@
 # MNP AI Bot - Backend API
 
-A powerful FastAPI-based backend for analyzing Mobile Number Portability (MNP) journeys with AI-generated suggestions and comprehensive logging capabilities.
+A powerful FastAPI-based backend for analyzing Mobile Number Portability (MNP) journeys with AI-generated suggestions and comprehensive logging capabilities. Integrates with Power BI Desktop for interactive dashboards on porting patterns, operator performance, and log analytics.
 
 ## 🎯 Overview
 
@@ -9,6 +9,7 @@ The MNP AI Bot provides a REST API that processes MNP journey data from database
 - Detailed logs analysis with statistics
 - AI-powered suggestions for issue resolution
 - Real-time data processing
+- Power BI Desktop dashboards for porting trends, operator/circle performance, and error analysis
 
 ## ✨ Features
 
@@ -17,6 +18,7 @@ The MNP AI Bot provides a REST API that processes MNP journey data from database
 - **Logs Analysis**: Parse and analyze application logs with statistics
 - **Timeline Generation**: Event-based timeline with visualization data
 - **Issue Detection**: Automatic detection of critical issues in logs
+- **Power BI Integration**: PostgreSQL-native dashboards for porting patterns, operator/circle success rates, and log-level trends
 
 ### 🔐 Security
 - **OLM ID Authentication**: Role-based access control

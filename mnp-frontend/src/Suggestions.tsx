@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Suggestion as SuggestionType } from './types'
 import './Suggestions.css'
 

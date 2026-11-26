@@ -1,4 +1,3 @@
-import React from 'react'
 import { MNPJourneyEvent } from './types'
 import { format } from 'date-fns'
 import './JourneyTable.css'

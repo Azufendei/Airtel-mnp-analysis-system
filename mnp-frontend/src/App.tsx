@@ -1,6 +1,4 @@
-import React from 'react'
 import { AuthProvider, useAuth } from './AuthContext'
-import { ProtectedRoute } from './ProtectedRoute'
 import LoginPage from './LoginPage'
 import Dashboard from './Dashboard'
 import './App.css'
@@ -18,4 +16,3 @@ export default function App() {
     </AuthProvider>
   )
 }
-

@@ -8,6 +8,13 @@ import requests
 import json
 import sys
 
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
 BASE_URL = "http://localhost:8000"
 
 def test_health():
@@ -82,24 +89,23 @@ def test_analyze():
             print("=" * 60)
             print(data['logs_analysis']['summary'])
             
-            if data['logs_analysis']['anomalies']:
-                print("\n⚠️ Anomalies Detected:")
-                for anomaly in data['logs_analysis']['anomalies']:
-                    print(f"   • {anomaly}")
+            if data['logs_analysis'].get('key_issues'):
+                print("\n⚠️ Key Issues Detected:")
+                for issue in data['logs_analysis']['key_issues']:
+                    print(f"   • {issue}")
             
             print("\n💡 SUGGESTIONS & RECOMMENDATIONS:")
             print("=" * 60)
-            for rec in data['suggestions']['recommendations']:
-                print(f"   • {rec}")
-            
-            if data['suggestions']['warnings']:
-                print("\n⚠️ Warnings:")
-                for warn in data['suggestions']['warnings']:
-                    print(f"   • {warn}")
-            
-            print("\n🎯 NEXT ACTIONS:")
-            for action in data['suggestions']['next_actions']:
-                print(f"   • {action}")
+            if isinstance(data.get('suggestions'), list):
+                for item in data['suggestions']:
+                    print(f"   • [{item.get('priority', '').upper()}] ({item.get('category')}): {item.get('suggestion')}")
+            elif isinstance(data.get('suggestions'), dict):
+                for rec in data['suggestions'].get('recommendations', []):
+                    print(f"   • {rec}")
+                for warn in data['suggestions'].get('warnings', []):
+                    print(f"   • ⚠️ {warn}")
+                for action in data['suggestions'].get('next_actions', []):
+                    print(f"   • 🎯 {action}")
             
             return True
         else:

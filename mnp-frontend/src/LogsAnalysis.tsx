@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { LogsAnalysis as LogsAnalysisType } from './types'
 import './LogsAnalysis.css'
 
@@ -8,19 +8,6 @@ interface LogsAnalysisProps {
 
 export default function LogsAnalysis({ analysis }: LogsAnalysisProps) {
   const [expandedIssue, setExpandedIssue] = useState<number | null>(null)
-
-  const getLogLevelColor = (level: string) => {
-    switch (level.toUpperCase()) {
-      case 'ERROR':
-        return '#dc2626'
-      case 'WARNING':
-        return '#ea580c'
-      case 'INFO':
-        return '#0891b2'
-      default:
-        return '#666'
-    }
-  }
 
   return (
     <div className="logs-analysis-container">
