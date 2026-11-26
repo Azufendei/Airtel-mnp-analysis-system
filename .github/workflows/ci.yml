@@ -60,10 +60,11 @@ jobs:
           SECRET_KEY: ci-test-secret-key-32-characters-long
           ALGORITHM: HS256
           ENVIRONMENT: test
+          PYTHONPATH: .
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY || '' }}
           GROQ_MODEL: qwen/qwen3.8-27b
         run: |
-          pytest -v
+          python -m pytest -v
 
   frontend-ci:
     name: Frontend Build & Typecheck
